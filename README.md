@@ -474,12 +474,11 @@ If I were taking this beyond the assessment, I would make the following producti
 
 ### General Scaling Approach
 
-- Keep MySQL primary for writes
-- Add read replicas for transaction history queries
-- Use Redis for throttling and short-lived caching
-- Add connection pooling and proper timeout tuning
-- Introduce a queue for non-critical asynchronous workloads
-- Keep wallet balance mutation on the synchronous transactional path, but push secondary work to background workers
+- Keep MySQL as the primary transactional database for wallet writes
+- Add read replicas for heavy read endpoints like transaction history
+- Use Redis for caching and distributed rate limiting
+- Tune connection pools and query timeouts
+- Offload non-critical work (notifications, webhooks, analytics) to background workers/queues
 
 In a scaled version of this system, I would use a queue for operations that should not block transaction completion, such as:
 
@@ -493,18 +492,16 @@ In a scaled version of this system, I would use a queue for operations that shou
 
 At that traffic level I would:
 
-- partition or archive `transactions` by time range
-- keep hot indexes lean and monitor index cardinality
-- use read replicas for `GET /transactions`
-- publish post-transaction events through an outbox pattern into a queue
-- process notifications, webhooks, reporting jobs, and reconciliation tasks with background consumers
-- monitor lock contention and slow queries
-- add observability dashboards around error rate, lock wait time, and transaction throughput
+- Keep wallet balance updates on a strongly consistent transactional path with row-level locking to preserve correctness under concurrency.
+- Add and maintain proper indexes on frequently queried fields like walletId, createdAt, reference, and idempotencyKey.
+- Partition or archive old transaction records to reduce table size and keep hot queries fast.
+- Use read replicas to offload read-heavy endpoints such as transaction history from the primary database.
+- Move non-critical operations like notifications and analytics to background workers or queues
+- Scale API servers horizontally behind a load balancer since the application layer is stateless.
 
 The write path for wallet debits should remain strongly consistent and transaction-bound, while queue-backed background jobs and read-heavy workloads can scale horizontally.
 
 ## Notes
 
 - Public registration creates only `user` accounts. Admin users should be provisioned through a controlled back-office or seed process.
-- This project is a wallet system, not a ledger system.
-- Swagger is available for manual API exploration.
+- Swagger is available for API exploration.
