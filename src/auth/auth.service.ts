@@ -39,19 +39,21 @@ export class AuthService {
     );
   }
 
-  async register(dto: RegisterDto) {
+  async register(dto: RegisterDto): Promise<Partial<User>> {
     const existing = await this.usersService.findByEmail(dto.email);
-    if (existing)
+
+    if (existing) {
       throw new ConflictException('User with email already registered');
+    }
 
-    const hashed = await bcrypt.hash(dto.password, 12);
+    const hashedPassword = await bcrypt.hash(dto.password, 12);
 
-    let savedUser: User;
+    let savedUser!: User;
 
     await this.dataSource.transaction(async (manager) => {
       const user = manager.create(User, {
         email: dto.email,
-        password: hashed,
+        password: hashedPassword,
         role: UserRole.USER,
       });
 
@@ -66,14 +68,13 @@ export class AuthService {
       await manager.save(wallet);
     });
 
-    const tokens = await this.generateTokens(savedUser!);
-
-    await this.usersService.updateRefreshToken(
-      savedUser!.id,
-      tokens.refreshToken,
-    );
-
-    return tokens;
+    return {
+      id: savedUser.id,
+      email: savedUser.email,
+      role: savedUser.role,
+      createdAt: savedUser.createdAt,
+      updatedAt: savedUser.updatedAt,
+    };
   }
 
   async login(dto: LoginDto) {

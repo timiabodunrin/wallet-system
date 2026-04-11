@@ -7,6 +7,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterResponseDto } from './dto/register-response.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -34,7 +35,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Login successful',
-    type: RegisterResponseDto,
+    type: LoginResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
@@ -48,7 +49,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Token refreshed successfully',
-    type: RegisterResponseDto,
+    type: LoginResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })

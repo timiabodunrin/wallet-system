@@ -1,17 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRole } from '../../users/entities/user.entity';
 
 export class RegisterResponseDto {
   @ApiProperty({
-    example:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDEiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTcxNDQzMDEyMywiZXhwIjoxNzE0NDMzNzIzfQ.abcdefghijklmnopqrstuvwxyz',
-    description: 'JWT access token',
+    example: 'ba81e123-5a83-40c8-9ef4-b1094681febf',
   })
-  accessToken: string;
+  id: string;
 
   @ApiProperty({
-    example:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDEiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTcxNDQzMDEyMywiZXhwIjoxNzE0NTE2NTIzfQ.xyz123456789',
-    description: 'JWT refresh token',
+    example: 'user@example.com',
   })
-  refreshToken: string;
+  email: string;
+
+  @ApiProperty({
+    enum: UserRole,
+    example: UserRole.USER,
+  })
+  role: UserRole;
+
+  @ApiProperty({
+    example: '2026-04-11T09:31:21.679Z',
+  })
+  createdAt: Date;
 }
