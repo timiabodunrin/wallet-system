@@ -101,21 +101,22 @@ export class TransactionService {
 
     const [transactions, total] = await this.transactionRepo.findAndCount({
       where: { walletId: wallet.id },
+      select: {
+        id: true,
+        reference: true,
+        type: true,
+        amount: true,
+        status: true,
+        idempotencyKey: true,
+        createdAt: true,
+      },
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,
     });
 
     return {
-      data: transactions.map((tx) => ({
-        id: tx.id,
-        reference: tx.reference,
-        type: tx.type,
-        amount: tx.amount,
-        status: tx.status,
-        idempotencyKey: tx.idempotencyKey,
-        createdAt: tx.createdAt,
-      })),
+      transactions,
       meta: {
         total,
         page,

@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { ResponseMessage } from '../common/decorators/response-message.decorator';
 import { TransactionResponseDto } from './dto/transaction-response.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @ApiTags('transactions')
 @ApiBearerAuth()
@@ -61,9 +62,8 @@ export class TransactionsController {
   @Get()
   getTransactions(
     @Request() req: { user: User },
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
+    @Query() { page = 1, limit = 10 }: PaginationDto,
   ) {
-    return this.transactionsService.getTransactions(req.user, +page, +limit);
+    return this.transactionsService.getTransactions(req.user, page, limit);
   }
 }
