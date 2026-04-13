@@ -96,6 +96,7 @@ export class TransactionService {
     const wallet = await this.walletRepo.findOne({
       where: { userId: user.id },
     });
+
     if (!wallet) throw new NotFoundException('Wallet not found');
 
     const [transactions, total] = await this.transactionRepo.findAndCount({
