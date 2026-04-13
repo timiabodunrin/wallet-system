@@ -373,6 +373,8 @@ Files:
 
 ### Run Tests
 
+Tests use `.env.test` for configuration, connecting to the isolated `wallet_db_test` database.
+
 ```bash
 npm test
 ```
